@@ -4461,31 +4461,52 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 const urlForLinux = "http://gosspublic.alicdn.com/ossutil/1.6.7/ossutil64";
 const urlForMac = "http://gosspublic.alicdn.com/ossutil/1.6.7/ossutilmac64";
+const urlForWindows = "http://gosspublic.alicdn.com/ossutil/1.6.7/ossutil64.zip";
+const isWindows = process.platform === "win32";
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const ENDPOINT = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("endpoint");
         const ACCESS_KEY_ID = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("access-key-id");
         const ACCESS_KEY_SECRET = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("access-key-secret");
         const OSS_ARGS = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("oss-args");
-        let ossUtilsBinName = 'ossutil64';
-        let ossUtilsUrlPath = urlForLinux;
+        let ossUtilsBinName = '';
+        let ossUtilsUrlPath = '';
         const bin = path__WEBPACK_IMPORTED_MODULE_3__.join(__dirname, ".bin");
+        const dest = path__WEBPACK_IMPORTED_MODULE_3__.join(__dirname, "dest");
         if (!fs__WEBPACK_IMPORTED_MODULE_4__.existsSync(bin)) {
             fs__WEBPACK_IMPORTED_MODULE_4__.mkdirSync(bin, { recursive: true });
+        }
+        if (!fs__WEBPACK_IMPORTED_MODULE_4__.existsSync(dest)) {
+            fs__WEBPACK_IMPORTED_MODULE_4__.mkdirSync(dest, { recursive: true });
+        }
+        if (process.platform === "linux") {
+            ossUtilsBinName = 'ossutil64';
+            ossUtilsUrlPath = urlForLinux;
         }
         if (process.platform === "darwin") {
             ossUtilsBinName = 'ossutilmac64';
             ossUtilsUrlPath = urlForMac;
         }
-        let toolPath = _actions_tool_cache__WEBPACK_IMPORTED_MODULE_2__.find(ossUtilsBinName, "1.6.7");
-        if (!toolPath) {
-            _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`downloading from ${ossUtilsUrlPath}`);
-            toolPath = yield _actions_tool_cache__WEBPACK_IMPORTED_MODULE_2__.downloadTool(ossUtilsUrlPath);
-            _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`downloaded to ${toolPath}`);
+        if (process.platform === "win32") {
+            ossUtilsBinName = 'ossutil64.exe';
+            ossUtilsUrlPath = urlForWindows;
         }
-        fs__WEBPACK_IMPORTED_MODULE_4__.copyFileSync(toolPath, path__WEBPACK_IMPORTED_MODULE_3__.join(bin, ossUtilsBinName));
-        fs__WEBPACK_IMPORTED_MODULE_4__.chmodSync(path__WEBPACK_IMPORTED_MODULE_3__.join(bin, ossUtilsBinName), 0o755);
-        _actions_core__WEBPACK_IMPORTED_MODULE_0__.addPath(bin);
+        if (isWindows) {
+            let toolZipDownloadPath = yield _actions_tool_cache__WEBPACK_IMPORTED_MODULE_2__.downloadTool(ossUtilsUrlPath);
+            yield _actions_tool_cache__WEBPACK_IMPORTED_MODULE_2__.extractZip(toolZipDownloadPath, dest);
+            _actions_core__WEBPACK_IMPORTED_MODULE_0__.addPath(path__WEBPACK_IMPORTED_MODULE_3__.join(dest, "ossutil64"));
+        }
+        else {
+            let toolPath = _actions_tool_cache__WEBPACK_IMPORTED_MODULE_2__.find(ossUtilsBinName, "1.6.7");
+            if (!toolPath) {
+                _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`downloading from ${ossUtilsUrlPath}`);
+                toolPath = yield _actions_tool_cache__WEBPACK_IMPORTED_MODULE_2__.downloadTool(ossUtilsUrlPath);
+                _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`downloaded to ${toolPath}`);
+            }
+            fs__WEBPACK_IMPORTED_MODULE_4__.copyFileSync(toolPath, path__WEBPACK_IMPORTED_MODULE_3__.join(bin, ossUtilsBinName));
+            fs__WEBPACK_IMPORTED_MODULE_4__.chmodSync(path__WEBPACK_IMPORTED_MODULE_3__.join(bin, ossUtilsBinName), 0o755);
+            _actions_core__WEBPACK_IMPORTED_MODULE_0__.addPath(bin);
+        }
         yield Object(_actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec)(ossUtilsBinName, [
             "config",
             "-e",
