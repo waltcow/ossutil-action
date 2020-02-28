@@ -1,0 +1,23 @@
+# action.yml
+name: "Aliyun ossutil github action"
+description: "ossutil action for cross platform"
+branding:
+  icon: 'play'
+  color: 'orange'
+inputs:
+  endpoint:
+    description: "endpoint to run ossutil command"
+    required: true
+  access-key-id:
+    description: "accessKey to authentication"
+    required: true
+  access-key-secret:
+    description: "accessSecret to authentication"
+    required: true
+  oss-args:
+    description: "ossArgs to run ossutil command"
+    required: false
+    default: ""
+runs:
+  using: "node12"
+  main: "dist/index.js"

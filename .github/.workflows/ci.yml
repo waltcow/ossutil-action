@@ -1,0 +1,38 @@
+name: test ossutil
+
+on: [push]
+
+jobs:
+  test-on-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo $GITHUB_SHA > output.linux.txt
+
+      - name: Copy file
+        id: ossutil
+        uses: waltcow/ossutil-action@master
+        with:
+          endpoint: "oss-cn-shenzhen.aliyuncs.com"
+          access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+          access-key-secret: ${{ secrets.ACCESS_KEY_SECRET }}
+          oss-args: "cp output.linux.txt oss://waltcow-image/output.linux.txt -f"
+
+      - name: Output command
+        run: echo "${{steps.ossutil.outputs.command}}"
+
+  test-on-macos:
+    runs-on: macOS-latest
+    steps:
+      - run: echo $GITHUB_SHA > output.macOS.txt
+
+      - name: Copy file
+        id: ossutil
+        uses: waltcow/ossutil-action@master
+        with:
+          endpoint: "oss-cn-shenzhen.aliyuncs.com"
+          access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+          access-key-secret: ${{ secrets.ACCESS_KEY_SECRET }}
+          oss-args: "cp output.macOS.txt oss://waltcow-image/output.macOS.txt -f"
+
+      - name: Output command
+        run: echo "${{steps.ossutil.outputs.command}}"
