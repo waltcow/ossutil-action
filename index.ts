@@ -52,7 +52,7 @@ async function main() {
         "CH"
     ]);
 
-    await exec(ossUtilsBinName, [OSS_ARGS])
+    await exec(`${ossUtilsBinName} ${OSS_ARGS}`);
 }
 
 main().catch(error => {

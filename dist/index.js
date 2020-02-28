@@ -4497,7 +4497,7 @@ function main() {
             "-L",
             "CH"
         ]);
-        yield Object(_actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec)(ossUtilsBinName, [OSS_ARGS]);
+        yield Object(_actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec)(`${ossUtilsBinName} ${OSS_ARGS}`);
     });
 }
 main().catch(error => {
